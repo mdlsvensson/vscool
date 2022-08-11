@@ -8,6 +8,7 @@ export type Color = {
 };
 
 export type Palette = {
+  hue: number;
   saturation: number;
   colors: Color[];
   mode: number;
