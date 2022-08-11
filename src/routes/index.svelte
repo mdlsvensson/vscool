@@ -1,31 +1,61 @@
 <script lang="ts">
 	import convert from 'color-convert';
-	import type { Color } from '../types';
+	import { browser } from '$app/env';
+	import type { Color, Palette } from '../types';
 
-	let numberOfColors = 5;
+	enum Mode {
+		SPREAD
+	}
 
-	const getRandomColor = (): Color => {
-		const hsl = [
-			Math.round(Math.random() * 360),
-			Math.round(Math.random() * 100),
-			Math.round(Math.random() * 100)
-		];
+	let colorCount = 5;
+	let colorPalette: Palette;
+	let mode = Mode.SPREAD;
+
+	const newColor = (palette: Palette): Color => {
+		const hue = Math.round(Math.random() * 360);
+		const lightness = Math.round(Math.random() * 50) + Math.round(Math.random() * 50);
 
 		return {
 			name: 'color',
-			hex: `#${convert.hsl.hex([hsl[0], hsl[1], hsl[2]])}`,
-			hsl,
-			rgb: convert.hsl.rgb([hsl[0], hsl[1], hsl[2]])
+			lightness,
+			hue,
+			hex: `#${convert.hsl.hex([hue, palette.saturation, lightness])}`,
+			rgb: convert.hsl.rgb([hue, palette.saturation, lightness]),
+			isLocked: false
 		};
 	};
 
-	let lockedColors = [getRandomColor()];
+	console.log(mode);
 
-	console.log(lockedColors);
+	const newPalette = (): Palette => {
+		const palette: Palette = {
+			saturation: Math.round(Math.random() * 100),
+			colors: [],
+			mode
+		};
+
+		for (let i = 0; i < colorCount; i++) {
+			palette.colors.push(newColor(palette));
+		}
+
+		return palette;
+	};
+
+	colorPalette = newPalette();
+
+	if (browser) {
+		document.onkeydown = (event) => {
+			if (event.key === ' ') {
+				colorPalette = newPalette();
+			}
+		};
+	}
 </script>
 
 <main class="w-screen h-screen p-4">
 	<div class="w-full h-full flex">
-		<p />
+		{#each colorPalette.colors as color}
+			<div class="h-full w-full" style="background-color: {color.hex}" />
+		{/each}
 	</div>
 </main>
