@@ -1,14 +1,23 @@
 import convert from 'color-convert';
-import type { Palette, Color } from "./types";
+import type { Palette, Color, ColorParams } from "./types";
 import { newHsl } from './common';
-import { mode as modeStore, colorCount as colorCountStore } from './stores';
+import {
+  mode as modeStore,
+  colorCount as colorCountStore,
+  colorParams as colorParamsStore,
+  currentPalette as currentPaletteStore,
+} from './stores';
 import { Mode } from './enums';
 
 let mode: number;
 let colorCount: number;
+let colorParams: ColorParams;
+// let currentPalette: Palette;
 
 modeStore.subscribe(value => mode = value);
 colorCountStore.subscribe(value => colorCount = value);
+colorParamsStore.subscribe(value => colorParams = value);
+// currentPaletteStore.subscribe(value => currentPalette = value);
 
 export const newPalette = (): Palette => {
   const newPalette: Palette = {
@@ -20,27 +29,58 @@ export const newPalette = (): Palette => {
 };
 
 const newPaletteColors = (): Color[] => {
-  const colors = [newColor()];
+  const colors = [newInitialColor()];
 
   switch (mode) {
     case Mode.MONO:
+      if (colors[0].hsl[0] > 50) {
+        colorParams.direction = 'tint';
+      } else {
+        colorParams.direction = 'shade';
+      }
+
       for (let i = 1; i < colorCount; i++) {
-        colors.push(newColor(mode));
+        colors.push(newMonoColor(colors));
       };
-
   }
-
-
 
   return colors;
 };
 
-const newColor = (): Color => {
+const newInitialColor = (): Color => {
   const Hsl = newHsl();
 
   return {
-    isLocked: false,
     name: '',
+    isLocked: false,
+    hex: convert.hsl.hex(Hsl),
+    rgb: convert.hsl.rgb(Hsl),
+    hsl: Hsl,
+    hsv: convert.hsl.hsv(Hsl),
+    cmyk: convert.hsl.cmyk(Hsl)
+  };
+};
+
+const newMonoColor = (colors: Color[]): Color => {
+  const Hsl = colors[colors.length - 1].hsl;
+  console.log(Hsl);
+
+  switch (colorParams.direction) {
+    case 'tint':
+      if (!(Hsl[2] + colorParams.distance > 100)) Hsl[2] += colorParams.distance;
+      else Hsl[2] = Hsl[2] + colorParams.distance - 100;
+
+      break;
+    case 'shade':
+      if (!(Hsl[2] - colorParams.distance < 0)) Hsl[2] -= colorParams.distance;
+      else Hsl[2] = Hsl[2] - colorParams.distance + 100;
+
+      break;
+  }
+
+  return {
+    name: '',
+    isLocked: false,
     hex: convert.hsl.hex(Hsl),
     rgb: convert.hsl.rgb(Hsl),
     hsl: Hsl,
