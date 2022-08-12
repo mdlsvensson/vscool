@@ -19,18 +19,19 @@
 	colorPalette = newPalette();
 </script>
 
-<div class="w-screen h-screen p-4 pt-0 flex flex-col">
+<div class="w-screen h-screen flex flex-col">
 	<header class="w-full h-20 flex justify-center items-center">
-		<nav class="flex h-1/2 items-center gap-2">
-			<Button value={0}>Random</Button>
-			<Button value={1}>Monochromatic</Button>
-		</nav>
-	</header>
-	<main class="w-full h-full">
-		<div class="w-full h-full flex">
-			{#each colorPalette.colors as color}
-				<div class="h-full w-full" style="background-color: #{color.hex}" />
-			{/each}
+		<div class="flex justify-between w-full mx-5 items-center">
+			<p class="text-gray-600">Press space to generate color palettes.</p>
+			<nav class="flex h-1/2 items-center gap-2">
+				<Button value={0}>Random</Button>
+				<Button value={1}>Monochromatic</Button>
+			</nav>
 		</div>
+	</header>
+	<main class="w-full h-full flex rounded-lg">
+		{#each colorPalette.colors as color}
+			<div class="h-full w-full" style="background-color: #{color.hex}" />
+		{/each}
 	</main>
 </div>
