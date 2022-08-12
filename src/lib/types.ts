@@ -22,3 +22,8 @@ export type Formats = {
   hsv: HSV;
   cmyk: CMYK;
 }
+
+export type ColorParams = {
+  distance: number;
+  direction: string | null;
+}
