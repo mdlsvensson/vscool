@@ -1,9 +1,19 @@
 <script lang="ts">
 	import { browser } from '$app/env';
-	import type { Color, Palette } from '$lib/types';
+	import type { Palette } from '$lib/types';
 	import { newPalette } from '$lib/factories';
-	import { mode } from '$lib/stores';
 	import Button from '$lib/components/Button.svelte';
+	import nearestColor from 'nearest-color';
+	import colorNameList from 'color-name-list';
+
+	const colors = colorNameList.colorNameList.reduce(
+		(o, { name, hex }) => Object.assign(o, { [name]: hex }),
+		{}
+	);
+
+	const nearest = nearestColor.from(colors);
+
+	console.log(nearest('#f1c1d1'));
 
 	let colorCount = 5;
 	let colorPalette: Palette;
