@@ -44,6 +44,11 @@ const newPaletteColors = (): Color[] => {
       for (let i = 1; i < colorCount; i++) {
         colors.push(newMonoColor(colors));
       };
+      break;
+    case Mode.ANALOG:
+      for (let i = 1; i < colorCount; i++) {
+        colors.push(newAnalogColor(colors));
+      }
   }
 
   return colors;
@@ -79,6 +84,22 @@ const newMonoColor = (colors: Color[]): Color => {
 
       break;
   }
+
+  return {
+    name: getNearestColor(convert.hsl.hex(Hsl)).name,
+    isLocked: false,
+    textColor: blackOrWhiteTextColor(convert.hsl.rgb(Hsl)),
+    hex: convert.hsl.hex(Hsl),
+    rgb: convert.hsl.rgb(Hsl),
+    hsl: Hsl,
+    hsv: convert.hsl.hsv(Hsl),
+    cmyk: convert.hsl.cmyk(Hsl)
+  };
+};
+
+const newAnalogColor = (colors: Color[]): Color => {
+  const Hsl = colors[colors.length - 1].hsl;
+  Hsl[1] += colorParams.distance + 20;
 
   return {
     name: getNearestColor(convert.hsl.hex(Hsl)).name,
@@ -130,7 +151,7 @@ const blackOrWhiteTextColor = (bg: RGB): string => {
   console.log(bg);
   console.log(brightness);
 
-  if (brightness > 155) {
+  if (brightness > 186) {
     const [textR, textG, textB] = setTextContrast(bg, blackRgb);
     return `rgb(${textR}, ${textG}, ${textB})`;
   }
