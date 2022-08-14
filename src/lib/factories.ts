@@ -50,7 +50,7 @@ const newPaletteColors = (): Color[] => {
         colors.push(newAnalogColor(colors));
       }
   }
-
+  console.log('PALLETTE');
   return colors;
 };
 
@@ -99,7 +99,7 @@ const newMonoColor = (colors: Color[]): Color => {
 
 const newAnalogColor = (colors: Color[]): Color => {
   const Hsl = colors[colors.length - 1].hsl;
-  Hsl[1] += colorParams.distance + 20;
+  Hsl[0] += colorParams.distance + 50;
 
   return {
     name: getNearestColor(convert.hsl.hex(Hsl)).name,
@@ -151,7 +151,7 @@ const blackOrWhiteTextColor = (bg: RGB): string => {
   console.log(bg);
   console.log(brightness);
 
-  if (brightness > 186) {
+  if (brightness > 125) {
     const [textR, textG, textB] = setTextContrast(bg, blackRgb);
     return `rgb(${textR}, ${textG}, ${textB})`;
   }
