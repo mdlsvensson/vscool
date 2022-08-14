@@ -3,17 +3,6 @@
 	import type { Palette } from '$lib/types';
 	import { newPalette } from '$lib/factories';
 	import Button from '$lib/components/Button.svelte';
-	import nearestColor from 'nearest-color';
-	import colorNameList from 'color-name-list';
-
-	const colors = colorNameList.colorNameList.reduce(
-		(o, { name, hex }) => Object.assign(o, { [name]: hex }),
-		{}
-	);
-
-	const nearest = nearestColor.from(colors);
-
-	console.log(nearest('#f1c1d1'));
 
 	let colorCount = 5;
 	let colorPalette: Palette;
@@ -41,7 +30,12 @@
 	</header>
 	<main class="w-full h-full flex rounded-lg">
 		{#each colorPalette.colors as color}
-			<div class="h-full w-full" style="background-color: #{color.hex}" />
+			<div
+				class="h-full w-full flex flex-col justify-end items-center"
+				style="background-color: #{color.hex};"
+			>
+				<p class="mb-8" style="color: {color.textColor};">{color.name}</p>
+			</div>
 		{/each}
 	</main>
 </div>
