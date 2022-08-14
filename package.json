@@ -37,7 +37,6 @@
 	"type": "module",
 	"dependencies": {
 		"color-convert": "^2.0.1",
-		"color-name-list": "^9.19.0",
 		"nearest-color": "^0.4.4"
 	}
 }
