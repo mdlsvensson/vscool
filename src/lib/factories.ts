@@ -8,6 +8,8 @@ import {
   currentPalette as currentPaletteStore,
 } from './stores';
 import { Mode } from './enums';
+import getNearestColor from './colorNames';
+import type { RGB } from "color-convert/conversions";
 
 let mode: number;
 let colorCount: number;
@@ -51,8 +53,9 @@ const newInitialColor = (): Color => {
   const Hsl = newHsl();
 
   return {
-    name: '',
+    name: getNearestColor(convert.hsl.hex(Hsl)).name,
     isLocked: false,
+    textColor: blackOrWhiteTextColor(convert.hsl.rgb(Hsl)),
     hex: convert.hsl.hex(Hsl),
     rgb: convert.hsl.rgb(Hsl),
     hsl: Hsl,
@@ -63,7 +66,6 @@ const newInitialColor = (): Color => {
 
 const newMonoColor = (colors: Color[]): Color => {
   const Hsl = colors[colors.length - 1].hsl;
-  console.log(Hsl);
 
   switch (colorParams.direction) {
     case 'tint':
@@ -79,8 +81,9 @@ const newMonoColor = (colors: Color[]): Color => {
   }
 
   return {
-    name: '',
+    name: getNearestColor(convert.hsl.hex(Hsl)).name,
     isLocked: false,
+    textColor: blackOrWhiteTextColor(convert.hsl.rgb(Hsl)),
     hex: convert.hsl.hex(Hsl),
     rgb: convert.hsl.rgb(Hsl),
     hsl: Hsl,
@@ -89,18 +92,49 @@ const newMonoColor = (colors: Color[]): Color => {
   };
 };
 
-const checkContrast = (color: Color, paletteColors: Color[]): boolean => {
-  const [r, g, b] = color.rgb;
-  const { length } = paletteColors;
-  let contrast = 0;
-  let i = 0;
+const setTextContrast = (bg: RGB, text: RGB): RGB => {
+  const [r, g, b] = bg;
+  const [r2, g2, b2] = text;
+  const brightnessBg = r * 0.299 + g * 0.587 + b * 0.114;
+  const brightnessText = r2 * 0.299 + g2 * 0.587 + b2 * 0.114;
+  const minContrast = 150;
 
-  // get the contrast between the color and each palette color
-  while (i < length) {
-    const [r2, g2, b2] = paletteColors[i].rgb;
-    contrast += Math.abs(r - r2) + Math.abs(g - g2) + Math.abs(b - b2);
-    i++;
+  if (brightnessBg > brightnessText) {
+    if (!(brightnessBg - brightnessText > minContrast)) {
+      for (let i = 0; i < 3; i++) {
+        text[i]--;
+      }
+      setTextContrast(bg, text);
+    }
+
+    return text;
   }
 
-  return true;
+  if (!(brightnessText - brightnessBg > minContrast)) {
+    for (let i = 0; i < 3; i++) {
+      text[i]++;
+    }
+    setTextContrast(bg, text);
+  }
+
+  return text;
+};
+
+const blackOrWhiteTextColor = (bg: RGB): string => {
+  const blackRgb: RGB = [30, 30, 30];
+  const whiteRgb: RGB = [235, 235, 235];
+
+  const [r, g, b] = bg;
+  const brightness = r * 0.299 + g * 0.587 + b * 0.114;
+
+  console.log(bg);
+  console.log(brightness);
+
+  if (brightness > 155) {
+    const [textR, textG, textB] = setTextContrast(bg, blackRgb);
+    return `rgb(${textR}, ${textG}, ${textB})`;
+  }
+
+  const [textR, textG, textB] = setTextContrast(bg, whiteRgb);
+  return `rgb(${textR}, ${textG}, ${textB})`;
 };
