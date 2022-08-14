@@ -25,6 +25,7 @@
 			<nav class="flex h-1/2 items-center gap-2">
 				<Button value={0}>Random</Button>
 				<Button value={1}>Monochromatic</Button>
+				<Button value={2}>Analogous</Button>
 			</nav>
 		</div>
 	</header>
