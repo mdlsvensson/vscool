@@ -2,6 +2,7 @@ import type { RGB, HSL, HSV, CMYK, HEX } from "color-convert/conversions";
 
 export type Color = {
   isLocked: boolean;
+  textColor: string;
 } & Name & Formats;
 
 export type Palette = {
